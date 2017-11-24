@@ -5,7 +5,7 @@ Public Class Conexion
     Public Shared cnn As New SqlConnection
     Public Shared Function Conectado()
         Try
-            cnn = New SqlConnection("Data Source=PC-JMIDE02\SQLEXPRESS;Initial Catalog=Proyecto;Integrated Security=True")
+            cnn = New SqlConnection("Data Source=PC-JMIDE02\SQLEXPRESS;Initial Catalog=BD_TSE;Integrated Security=True")
             cnn.Open()
             Return True
         Catch ex As Exception

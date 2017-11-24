@@ -155,11 +155,12 @@ Public Class Servidor
             Case 1
                 funciones.Bitacora("Intento de logueo con el usuario " & sol.ArgumentosSolicitud.Item(0))
                 Dim dat As Datos = New Datos(sol.ArgumentosSolicitud.Item(0), sol.ArgumentosSolicitud.Item(1))
-                Dim res As Boolean = funciones.Validar(dat)
-                If res Then
+                Dim res As ArrayList = funciones.Validar(dat)
+                If res.Count > 0 Then
                     System.Threading.Thread.Sleep(1000)
                     funciones.Bitacora("Éxito al loguear al usuario " & sol.ArgumentosSolicitud.Item(0))
                     solicitud.MensajeSolicitud = "Exito al hacer login"
+                    solicitud.ArgumentosSolicitud = res
                     IP1 = sol.ArgumentosSolicitud.Item(0).ToString
                     WinSockServer1.SetUser(IDTerminal, IP1)
                     tipo = True

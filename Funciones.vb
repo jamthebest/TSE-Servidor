@@ -13,26 +13,30 @@ Public Class Funciones
     Private IVector() As Byte = {27, 9, 45, 27, 0, 72, 171, 54} 'Vector para encriptación 3DES
 
 
-    Public Function Validar(ByVal dat As Datos) As Boolean
+    Public Function Validar(ByVal dat As Datos) As ArrayList
         SyncLock Me
             Try
                 Conectado()
-                cmd = New SqlCommand("Validar")
+                cmd = New SqlCommand("validar")
                 cmd.CommandType = CommandType.StoredProcedure
                 cmd.Connection = cnn
-                cmd.Parameters.AddWithValue("@user", dat.nomusuario)
-                cmd.Parameters.AddWithValue("@pass", dat.passusuario)
+                cmd.Parameters.AddWithValue("@usuario", dat.nomusuario)
+                cmd.Parameters.AddWithValue("@contraseña", dat.passusuario)
 
                 Dim dr As SqlDataReader
                 dr = cmd.ExecuteReader
+                Dim user As New ArrayList
                 If dr.HasRows = True Then
-                    Return True
-                Else
-                    Return False
+                    For Each item As System.Data.Common.DbDataRecord In dr
+                        user.Add(item.GetInt32(0))
+                        user.Add(item.GetInt32(1))
+                        user.Add(item.GetInt32(2))
+                    Next
                 End If
+                Return user
             Catch ex As Exception
                 MsgBox("Error al Validar: " & ex.Message)
-                Return False
+                Return New ArrayList
             Finally
                 Desconectado()
             End Try

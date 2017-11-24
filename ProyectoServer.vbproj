@@ -98,12 +98,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Server.Designer.vb">
-      <DependentUpon>Server.vb</DependentUpon>
-    </Compile>
-    <Compile Include="Server.vb">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Servidor.Designer.vb">
       <DependentUpon>Servidor.vb</DependentUpon>
     </Compile>
@@ -123,9 +117,6 @@
       <LastGenOutput>Resources.Designer.vb</LastGenOutput>
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Server.resx">
-      <DependentUpon>Server.vb</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Servidor.resx">
       <DependentUpon>Servidor.vb</DependentUpon>
