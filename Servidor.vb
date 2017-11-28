@@ -15,24 +15,8 @@ Public Class Servidor
     Dim tipo As Boolean
     Private encendido As Boolean = False
     Private tool As ToolTip = New ToolTip()
-    Private Mess As Mensaje
-    Private mensaje1 As String
     Dim funciones As Funciones = New Funciones()
     Delegate Sub SetTextCallback(ByVal [text1] As String)
-
-    Private Sub GuardarMensaje()
-        Me.NuevoMensaje(Mess)
-    End Sub
-
-    Private Sub NuevoMensaje(ByVal Message As Mensaje)
-        If IsNothing(Message.Sound) Then
-            Message.Sound = ""
-        End If
-        If IsNothing(Message.Text) Then
-            Message.Text = ""
-        End If
-        funciones.nuevoMensaje(Message.MessageFrom.User, Message.MessageTo.User, Message.Text, Message.Sound)
-    End Sub
 
     Private Sub ThreadProcSafe()
         Me.SetText(IP1)
@@ -141,8 +125,12 @@ Public Class Servidor
             y = Datos.Last
         Loop
         Dim x As String = funciones.decryptString(Datos)
+        Debug.WriteLine("Datos: " + Datos + "Decript, " + x)
+        Debug.WriteLine("Decript: " + x)
         texto3 = x.Substring(x.IndexOf("?XXXJAMXXX?") + 11)
+        Debug.WriteLine("texto3: " + texto3)
         x = x.Substring(0, x.IndexOf("?XXXJAMXXX?"))
+        Debug.WriteLine("Nuevo x: " + x)
         Dim sol As Solicitud = funciones.DesSerializar(x, 1)
         texto = Datos
         texto2 = x
@@ -173,35 +161,18 @@ Public Class Servidor
                 End If
 
             Case 2
-                Dim mensaje As String = funciones.decryptString(sol.MensajeSolicitud)
+                Dim parametros As String = funciones.decryptString(sol.MensajeSolicitud)
                 texto = sol.MensajeSolicitud
-                texto3 = mensaje.Substring(mensaje.IndexOf("?XXXJAMXXX?") + 11)
-                mensaje = mensaje.Substring(0, mensaje.IndexOf("?XXXJAMXXX?"))
-                texto2 = mensaje
-                Dim message As Mensaje = funciones.DesSerializar(mensaje)
-                If Not IsNothing(message.Sound) Then
-                    If IsNothing(message.Text) Or message.Text.Equals("") Then
-                        funciones.Bitacora("El usuario " & message.MessageFrom.User & " envió un mensaje de audio a " & message.MessageTo.User)
-                    Else
-                        funciones.Bitacora("El usuario " & message.MessageFrom.User & " envió un mensaje de audio y texto a " & message.MessageTo.User)
-                    End If
+                texto3 = parametros.Substring(parametros.IndexOf("?XXXJAMXXX?") + 11)
+                parametros = parametros.Substring(0, parametros.IndexOf("?XXXJAMXXX?"))
+                texto2 = parametros
+                Dim registro As Registro = funciones.DesSerializarRegistro(parametros)
+                Dim creado As Boolean = funciones.nuevoRegistro(registro)
+                If (registro.tabla <> "" And registro.parametros.Count And creado) Then
+                    solicitud.MensajeSolicitud = "Registro Creado!"
                 Else
-                    funciones.Bitacora("El usuario " & message.MessageFrom.User & " envió un mensaje de texto a " & message.MessageTo.User)
+                    solicitud.MensajeSolicitud = "Error al crear Registro!"
                 End If
-                WinSockServer1.SetUser(IDTerminal, message.MessageFrom.User)
-
-                solicitud.MensajeSolicitud = "Mensaje Enviado!"
-                solicitud.TipoSolicitud = 5
-
-                Dim soli As Solicitud = New Solicitud(2, sol.MensajeSolicitud)
-
-                WinSockServer1.EnviarDatos(message.MessageTo.User, funciones.Encriptar(soli, "Solicitud"))
-
-                Me.Mess = message
-                Me.mensaje1 = mensaje
-                Me.thread = New Threading.Thread(New Threading.ThreadStart(AddressOf Me.GuardarMensaje))
-                Me.thread.Start()
-                'funciones.nuevoMensaje(message.MessageFrom.User, message.MessageTo.User, mensaje)
 
             Case 3
                 funciones.Bitacora("El usuario " & sol.ArgumentosSolicitud.Item(0).ToString & " solicitó el listado de usuarios")

@@ -88,6 +88,27 @@ Public Class Funciones
         End SyncLock
     End Function
 
+    Public Function nuevoRegistro(ByVal registro As Registro) As Boolean
+        SyncLock Me
+            Try
+                Conectado()
+                cmd = New SqlCommand("nuevo" + registro.tabla)
+                cmd.CommandType = CommandType.StoredProcedure
+                cmd.Connection = cnn
+                Select Case registro.tabla
+                    Case "Pais"
+                        cmd.Parameters.AddWithValue("@nombre", registro.parametros.Item(0))
+                End Select
+                Dim dr As SqlDataReader
+                dr = cmd.ExecuteReader
+                Return True
+            Catch ex As Exception
+                MsgBox("Error al crear el Registro: " & ex.Message)
+                Return False
+            End Try
+        End SyncLock
+    End Function
+
     Public Function nuevoCliente(ByVal usuario As Datos) As Boolean
         SyncLock Me
             Try
@@ -244,6 +265,28 @@ Public Class Funciones
                 MsgBox("Error al Serializar: " & e.ToString)
             End Try
             Return FileToString(ruta & ".xml")
+        End SyncLock
+    End Function
+
+    Public Function DesSerializarRegistro(ByVal xml As String) As Registro
+        SyncLock Me
+            Try
+                Dim registro As New Registro()
+                Dim x As New XmlSerializer(registro.GetType)
+                'Deserialize text file to a new object.
+                Dim objStreamReader As New StreamReader(xmlToFile(xml))
+                Try
+                    registro = x.Deserialize(objStreamReader)
+                Catch ex As Exception
+                    MsgBox("Error al DesSerializar: " & ex.ToString)
+                Finally
+                    objStreamReader.Close()
+                End Try
+                Return registro
+            Catch ex As Exception
+                MsgBox("Error DesSerializar mensaje!" & vbCrLf & ex.Message)
+            End Try
+            Return Nothing
         End SyncLock
     End Function
 
