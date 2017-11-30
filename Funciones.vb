@@ -101,6 +101,9 @@ Public Class Funciones
                     Case "Departamento", "Municipio"
                         cmd.Parameters.AddWithValue(If(registro.tabla = "Departamento", "@pais", "@departamento"), registro.parametros.Item(0))
                         cmd.Parameters.AddWithValue("@nombre", registro.parametros.Item(1))
+                    Case "PartidoPolitico"
+                        cmd.Parameters.AddWithValue("@nombre", registro.parametros.Item(0))
+                        cmd.Parameters.AddWithValue("@logo", registro.parametros.Item(1))
                 End Select
                 Dim dr As SqlDataReader
                 dr = cmd.ExecuteReader
