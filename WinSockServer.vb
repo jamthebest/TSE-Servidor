@@ -47,6 +47,18 @@ Public Class WinSockServer
 
 
 #Region "METODOS"
+    Public Sub SetUser(ByVal id As Net.IPEndPoint, ByVal usuario As String, ByVal idUsuario As Integer)
+        Try
+            Dim user As InfoDeUnCliente = Clientes(id)
+            user.User = usuario
+            Clientes.Remove(id)
+            Clientes.Add(id, user)
+            'user = Clientes(id)
+            'CType(Clientes(id), InfoDeUnCliente).User = usuario
+        Catch e As Exception
+            MsgBox("Error en la solicitud!" & vbCrLf & e.Message)
+        End Try
+    End Sub
     Public Sub SetUser(ByVal id As Net.IPEndPoint, ByVal usuario As String)
         Try
             Dim user As InfoDeUnCliente = Clientes(id)

@@ -175,21 +175,22 @@ Public Class Servidor
                 End If
 
             Case 3
-                funciones.Bitacora("El usuario " & sol.ArgumentosSolicitud.Item(0).ToString & " solicitó el listado de usuarios")
-                WinSockServer1.SetUser(IDTerminal, sol.ArgumentosSolicitud.Item(0).ToString)
+                funciones.Bitacora("El usuario " & sol.ArgumentosSolicitud.Item(0).ToString & "(" & sol.ArgumentosSolicitud.Item(1).ToString & ")" & " solicitó el listado de usuarios")
+                WinSockServer1.SetUser(IDTerminal, sol.ArgumentosSolicitud.Item(0).ToString, 0)
                 solicitud.ArgumentosSolicitud = funciones.obtenerClientes(New User(sol.ArgumentosSolicitud.Item(0).ToString))
                 solicitud.MensajeSolicitud = "Usuarios Enviados"
                 funciones.Bitacora("Se envió el listado de usuarios a " & sol.ArgumentosSolicitud.Item(0).ToString)
 
             Case 4
-                funciones.Bitacora("El usuario " & sol.ArgumentosSolicitud.Item(0).ToString & " solicitó el historial de mensajes con " & sol.ArgumentosSolicitud.Item(1).ToString)
-                WinSockServer1.SetUser(IDTerminal, sol.ArgumentosSolicitud.Item(0).ToString)
+                funciones.Bitacora("El usuario " & sol.ArgumentosSolicitud.Item(0).ToString & "(" & sol.ArgumentosSolicitud.Item(1).ToString & ")" & " solicitó los datos de la tabla " & sol.MensajeSolicitud)
+                WinSockServer1.SetUser(IDTerminal, sol.ArgumentosSolicitud.Item(0).ToString, sol.ArgumentosSolicitud.Item(1))
                 Dim arg As ArrayList = New ArrayList
-                arg = funciones.obtenerMensajes(New User(sol.ArgumentosSolicitud.Item(0).ToString), New User(sol.ArgumentosSolicitud.Item(1).ToString))
+                arg = funciones.obtenerRegistros(sol.MensajeSolicitud, sol.ArgumentosSolicitud)
+                'arg = funciones.obtenerMensajes(New User(sol.ArgumentosSolicitud.Item(0).ToString), New User(sol.ArgumentosSolicitud.Item(1).ToString))
 
                 solicitud.ArgumentosSolicitud = arg
-                solicitud.MensajeSolicitud = "Mensajes Enviados"
-                funciones.Bitacora("Se envió el historial de mensajes a " & sol.ArgumentosSolicitud.Item(0).ToString)
+                solicitud.MensajeSolicitud = "Registros Enviados"
+                funciones.Bitacora("Se enviaron los registros de la tabla " & sol.MensajeSolicitud & " a " & sol.ArgumentosSolicitud.Item(0).ToString & "(" & sol.ArgumentosSolicitud.Item(1).ToString & ")")
 
             Case Else
 
@@ -215,9 +216,9 @@ Public Class Servidor
         Me.demo3.Start()
 
         System.Threading.Thread.Sleep(600)
-        If solicitud.TipoSolicitud = 1 Then
-            WinSockServer1.ActualizarListado()
-        End If
+        'If solicitud.TipoSolicitud = 1 Then
+        'WinSockServer1.ActualizarListado()
+        'End If
 
         'Muestro el mensaje recibido 
         ' Call MsgBox(WinSockServer1.ObtenerDatos(IDTerminal))

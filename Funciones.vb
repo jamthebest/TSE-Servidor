@@ -47,7 +47,7 @@ Public Class Funciones
         SyncLock Me
             Try
                 Conectado()
-                cmd = New SqlCommand("obtenerClientes")
+                cmd = New SqlCommand("obtenerUsuarios")
                 cmd.CommandType = CommandType.StoredProcedure
                 cmd.Connection = cnn
                 cmd.Parameters.AddWithValue("@user", usuario.User)
@@ -98,6 +98,9 @@ Public Class Funciones
                 Select Case registro.tabla
                     Case "Pais"
                         cmd.Parameters.AddWithValue("@nombre", registro.parametros.Item(0))
+                    Case "Departamento"
+                        cmd.Parameters.AddWithValue("@pais", registro.parametros.Item(0))
+                        cmd.Parameters.AddWithValue("@nombre", registro.parametros.Item(1))
                 End Select
                 Dim dr As SqlDataReader
                 dr = cmd.ExecuteReader
@@ -198,6 +201,39 @@ Public Class Funciones
             Catch ex As Exception
                 MsgBox("Error al cambiar Estado: " & ex.Message)
                 Return Nothing
+            Finally
+                Desconectado()
+            End Try
+        End SyncLock
+    End Function
+
+    Public Function obtenerRegistros(ByVal tabla As String, ByVal parametros As ArrayList) As ArrayList
+        SyncLock Me
+            Dim arg As ArrayList = New ArrayList
+            Try
+                Conectado()
+                cmd = New SqlCommand("obtener" + tabla)
+                cmd.CommandType = CommandType.StoredProcedure
+                cmd.Connection = cnn
+                Select Case tabla
+                    Case "Departamentos"
+                        cmd.Parameters.AddWithValue("@pais", parametros.Item(0))
+                End Select
+                Dim dr As SqlDataReader
+                dr = cmd.ExecuteReader
+
+                If dr.HasRows Then
+                    For Each item As System.Data.Common.DbDataRecord In dr
+                        Dim registro As New ArrayList
+                        registro.Add(item.GetInt32(0))
+                        registro.Add(item.GetString(1))
+                        arg.Add(registro)
+                    Next
+                End If
+                Return arg
+            Catch ex As Exception
+                MsgBox("Error al cambiar Estado: " & ex.Message)
+                Return arg
             Finally
                 Desconectado()
             End Try
