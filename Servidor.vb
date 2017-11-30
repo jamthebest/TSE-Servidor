@@ -186,7 +186,6 @@ Public Class Servidor
                 WinSockServer1.SetUser(IDTerminal, sol.ArgumentosSolicitud.Item(0).ToString, sol.ArgumentosSolicitud.Item(1))
                 Dim arg As ArrayList = New ArrayList
                 arg = funciones.obtenerRegistros(sol.MensajeSolicitud, sol.ArgumentosSolicitud)
-                'arg = funciones.obtenerMensajes(New User(sol.ArgumentosSolicitud.Item(0).ToString), New User(sol.ArgumentosSolicitud.Item(1).ToString))
 
                 solicitud.ArgumentosSolicitud = arg
                 solicitud.MensajeSolicitud = "Registros Enviados"

@@ -98,8 +98,8 @@ Public Class Funciones
                 Select Case registro.tabla
                     Case "Pais"
                         cmd.Parameters.AddWithValue("@nombre", registro.parametros.Item(0))
-                    Case "Departamento"
-                        cmd.Parameters.AddWithValue("@pais", registro.parametros.Item(0))
+                    Case "Departamento", "Municipio"
+                        cmd.Parameters.AddWithValue(If(registro.tabla = "Departamento", "@pais", "@departamento"), registro.parametros.Item(0))
                         cmd.Parameters.AddWithValue("@nombre", registro.parametros.Item(1))
                 End Select
                 Dim dr As SqlDataReader
@@ -217,7 +217,9 @@ Public Class Funciones
                 cmd.Connection = cnn
                 Select Case tabla
                     Case "Departamentos"
-                        cmd.Parameters.AddWithValue("@pais", parametros.Item(0))
+                        If parametros.Count > 2 Then
+                            cmd.Parameters.AddWithValue("@pais", parametros.Item(2))
+                        End If
                 End Select
                 Dim dr As SqlDataReader
                 dr = cmd.ExecuteReader
