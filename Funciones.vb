@@ -104,6 +104,14 @@ Public Class Funciones
                     Case "PartidoPolitico"
                         cmd.Parameters.AddWithValue("@nombre", registro.parametros.Item(0))
                         cmd.Parameters.AddWithValue("@logo", registro.parametros.Item(1))
+                    Case "Usuario"
+                        cmd.Parameters.AddWithValue("@identidad", registro.parametros.Item(0))
+                        cmd.Parameters.AddWithValue("@nombre", registro.parametros.Item(1))
+                        cmd.Parameters.AddWithValue("@municipio", registro.parametros.Item(2))
+                        cmd.Parameters.AddWithValue("@foto", registro.parametros.Item(3))
+                        cmd.Parameters.AddWithValue("@usuario", registro.parametros.Item(4))
+                        cmd.Parameters.AddWithValue("@contraseña", registro.parametros.Item(5))
+                        cmd.Parameters.AddWithValue("@tipo", registro.parametros.Item(6))
                 End Select
                 Dim dr As SqlDataReader
                 dr = cmd.ExecuteReader
@@ -219,9 +227,12 @@ Public Class Funciones
                 cmd.CommandType = CommandType.StoredProcedure
                 cmd.Connection = cnn
                 Select Case tabla
-                    Case "Departamentos"
+                    Case "Departamentos", "Municipios"
                         If parametros.Count > 2 Then
                             cmd.Parameters.AddWithValue("@pais", parametros.Item(2))
+                            If tabla = "Municipios" And parametros.Count > 3 Then
+                                cmd.Parameters.AddWithValue("@departamento", parametros.Item(3))
+                            End If
                         End If
                 End Select
                 Dim dr As SqlDataReader
