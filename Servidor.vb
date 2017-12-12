@@ -125,12 +125,8 @@ Public Class Servidor
             y = Datos.Last
         Loop
         Dim x As String = funciones.decryptString(Datos)
-        Debug.WriteLine("Datos: " + Datos + "Decript, " + x)
-        Debug.WriteLine("Decript: " + x)
         texto3 = x.Substring(x.IndexOf("?XXXJAMXXX?") + 11)
-        Debug.WriteLine("texto3: " + texto3)
         x = x.Substring(0, x.IndexOf("?XXXJAMXXX?"))
-        Debug.WriteLine("Nuevo x: " + x)
         Dim sol As Solicitud = funciones.DesSerializar(x, 1)
         texto = Datos
         texto2 = x
@@ -188,7 +184,7 @@ Public Class Servidor
                 arg = funciones.obtenerRegistros(sol.MensajeSolicitud, sol.ArgumentosSolicitud)
 
                 solicitud.ArgumentosSolicitud = arg
-                solicitud.MensajeSolicitud = "Registros Enviados"
+                solicitud.MensajeSolicitud = sol.MensajeSolicitud
                 funciones.Bitacora("Se enviaron los registros de la tabla " & sol.MensajeSolicitud & " a " & sol.ArgumentosSolicitud.Item(0).ToString & "(" & sol.ArgumentosSolicitud.Item(1).ToString & ")")
 
             Case Else
@@ -201,6 +197,7 @@ Public Class Servidor
         Me.txtSalDesencriptado.Text = xml
         Me.txtSalEncriptado.Text = tDes
         Me.txtSalMD5.Text = salMd
+        Debug.WriteLine("Respuesta: " & xml)
         Me.WinSockServer1.EnviarDatos(IDTerminal, tDes)
 
         'Me.SetText2(texto2)

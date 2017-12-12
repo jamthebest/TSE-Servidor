@@ -112,6 +112,20 @@ Public Class Funciones
                         cmd.Parameters.AddWithValue("@usuario", registro.parametros.Item(4))
                         cmd.Parameters.AddWithValue("@contraseña", registro.parametros.Item(5))
                         cmd.Parameters.AddWithValue("@tipo", registro.parametros.Item(6))
+                    Case "Candidato"
+                        cmd.Parameters.AddWithValue("@partido", registro.parametros.Item(0))
+                        cmd.Parameters.AddWithValue("@cargo", registro.parametros.Item(1))
+                        If registro.parametros.Count > 3 Then
+                            cmd.Parameters.AddWithValue("@identidad", registro.parametros.Item(2))
+                            cmd.Parameters.AddWithValue("@nombre", registro.parametros.Item(3))
+                            cmd.Parameters.AddWithValue("@municipio", registro.parametros.Item(4))
+                            cmd.Parameters.AddWithValue("@foto", registro.parametros.Item(5))
+                            cmd.Parameters.AddWithValue("@usuario", registro.parametros.Item(6))
+                            cmd.Parameters.AddWithValue("@contraseña", registro.parametros.Item(7))
+                            cmd.Parameters.AddWithValue("@tipo", registro.parametros.Item(8))
+                        Else
+                            cmd.Parameters.AddWithValue("@persona", registro.parametros.Item(2))
+                        End If
                 End Select
                 Dim dr As SqlDataReader
                 dr = cmd.ExecuteReader
@@ -234,6 +248,10 @@ Public Class Funciones
                                 cmd.Parameters.AddWithValue("@departamento", parametros.Item(3))
                             End If
                         End If
+                    Case "Personas"
+                        If parametros.Count > 3 Then
+                            cmd.Parameters.AddWithValue("@" + parametros.Item(2), parametros.Item(3))
+                        End If
                 End Select
                 Dim dr As SqlDataReader
                 dr = cmd.ExecuteReader
@@ -241,8 +259,20 @@ Public Class Funciones
                 If dr.HasRows Then
                     For Each item As System.Data.Common.DbDataRecord In dr
                         Dim registro As New ArrayList
-                        registro.Add(item.GetInt32(0))
-                        registro.Add(item.GetString(1))
+                        If tabla = "Personas" Then
+                            registro.Add(item.GetInt32(0))
+                            registro.Add(item.GetString(1))
+                            registro.Add(item.GetString(2))
+                            registro.Add(item.GetValue(3))
+                            registro.Add(item.GetString(4))
+                            registro.Add(item.GetInt32(5))
+                            registro.Add(item.GetString(6))
+                            registro.Add(item.GetString(7))
+                            registro.Add(item.GetString(8))
+                        Else
+                            registro.Add(item.GetInt32(0))
+                            registro.Add(item.GetString(1))
+                        End If
                         arg.Add(registro)
                     Next
                 End If
