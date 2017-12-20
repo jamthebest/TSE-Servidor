@@ -126,6 +126,9 @@ Public Class Funciones
                         Else
                             cmd.Parameters.AddWithValue("@persona", registro.parametros.Item(2))
                         End If
+                    Case "Voto"
+                        cmd.Parameters.AddWithValue("@persona", registro.parametros.Item(0))
+                        cmd.Parameters.AddWithValue("@candidato", registro.parametros.Item(1))
                 End Select
                 Dim dr As SqlDataReader
                 dr = cmd.ExecuteReader
@@ -182,56 +185,6 @@ Public Class Funciones
         End SyncLock
     End Function
 
-    Public Function obtenerMensajes(ByVal usuario As User, ByVal para As User) As ArrayList
-        SyncLock Me
-            Try
-                Conectado()
-                cmd = New SqlCommand("obtenerMensajes")
-                cmd.CommandType = CommandType.StoredProcedure
-                cmd.Connection = cnn
-                cmd.Parameters.AddWithValue("@de", usuario.User)
-                cmd.Parameters.AddWithValue("@para", para.User)
-                Dim dr As SqlDataReader
-                Dim arg As ArrayList = New ArrayList
-                dr = cmd.ExecuteReader
-
-                If dr.HasRows Then
-                    For Each item As System.Data.Common.DbDataRecord In dr
-                        Dim xml As New Mensaje()
-                        Dim de As String = item.GetString(0)
-                        Dim MenTo As String = item.GetString(1)
-                        Dim mensaje As String = item.GetString(2)
-                        Dim audio As String = item.GetString(3)
-                        Dim fecha As String = item.GetString(4)
-                        xml.MessageFrom = New User(de)
-                        xml.MessageTo = New User(MenTo)
-                        If Not mensaje.Equals("") Then
-                            xml.Text = mensaje
-                        End If
-                        If Not audio.Equals("") Then
-                            xml.Sound = audio
-                        End If
-
-                        arg.Add(de)
-                        arg.Add(MenTo)
-                        arg.Add(Serializar(xml, "Mensaje"))
-                        arg.Add(fecha)
-                        If File.Exists("Mensaje.xml") Then
-                            File.Delete("Mensaje.xml")
-                        End If
-                    Next
-                    Return arg
-                End If
-                Return Nothing
-            Catch ex As Exception
-                MsgBox("Error al cambiar Estado: " & ex.Message)
-                Return Nothing
-            Finally
-                Desconectado()
-            End Try
-        End SyncLock
-    End Function
-
     Public Function obtenerRegistros(ByVal tabla As String, ByVal parametros As ArrayList) As ArrayList
         SyncLock Me
             Dim arg As ArrayList = New ArrayList
@@ -252,6 +205,17 @@ Public Class Funciones
                         If parametros.Count > 3 Then
                             cmd.Parameters.AddWithValue("@" + parametros.Item(2), parametros.Item(3))
                         End If
+                    Case "Candidatos"
+                        If parametros.Count > 2 Then
+                            cmd.Parameters.AddWithValue("@tipo", parametros.Item(2))
+                            If parametros.Count > 3 Then
+                                cmd.Parameters.AddWithValue("@municipio", parametros.Item(3))
+                            End If
+                        End If
+                    Case "Resultados"
+                        If parametros.Count > 2 Then
+                            cmd.Parameters.AddWithValue("@tipo", parametros.Item(2))
+                        End If
                 End Select
                 Dim dr As SqlDataReader
                 dr = cmd.ExecuteReader
@@ -269,6 +233,20 @@ Public Class Funciones
                             registro.Add(item.GetString(6))
                             registro.Add(item.GetString(7))
                             registro.Add(item.GetString(8))
+                        ElseIf tabla = "Candidatos" Then
+                            registro.Add(item.GetInt32(0))
+                            registro.Add(item.GetString(1))
+                            registro.Add(item.GetInt32(2))
+                            registro.Add(item.GetValue(3))
+                            registro.Add(item.GetInt32(4))
+                            registro.Add(item.GetString(5))
+                            registro.Add(item.GetValue(6))
+                        ElseIf tabla = "Resultados" Then
+                            registro.Add(item.GetString(0))
+                            registro.Add(item.GetString(1))
+                            registro.Add(item.GetValue(2))
+                            registro.Add(item.GetValue(3))
+                            registro.Add(item.GetInt32(4))
                         Else
                             registro.Add(item.GetInt32(0))
                             registro.Add(item.GetString(1))
@@ -278,7 +256,7 @@ Public Class Funciones
                 End If
                 Return arg
             Catch ex As Exception
-                MsgBox("Error al cambiar Estado: " & ex.Message)
+                MsgBox("Error al obtener Registros: " & ex.Message)
                 Return arg
             Finally
                 Desconectado()
@@ -307,24 +285,6 @@ Public Class Funciones
             Finally
                 Desconectado()
             End Try
-        End SyncLock
-    End Function
-
-    Function Serializar(ByVal mensaje As Mensaje, ByVal ruta As String) As String
-        SyncLock Me
-            If (IO.File.Exists(ruta & ".xml")) Then
-                IO.File.Delete(ruta & ".xml")
-            End If
-            Dim objStreamWriter As New StreamWriter(ruta & ".xml")
-            Dim x As New XmlSerializer(mensaje.GetType)
-            Try
-                x.Serialize(objStreamWriter, mensaje)
-            Catch ex As NotImplementedException
-                MsgBox("Error al Serializar: " & ex.ToString, MsgBoxStyle.Critical, "Error!")
-            Finally
-                objStreamWriter.Close()
-            End Try
-            Return FileToString(ruta & ".xml")
         End SyncLock
     End Function
 
@@ -365,28 +325,6 @@ Public Class Funciones
                     objStreamReader.Close()
                 End Try
                 Return registro
-            Catch ex As Exception
-                MsgBox("Error DesSerializar mensaje!" & vbCrLf & ex.Message)
-            End Try
-            Return Nothing
-        End SyncLock
-    End Function
-
-    Public Function DesSerializar(ByVal xml As String) As Mensaje
-        SyncLock Me
-            Try
-                Dim mensaje As New Mensaje()
-                Dim x As New XmlSerializer(mensaje.GetType)
-                'Deserialize text file to a new object.
-                Dim objStreamReader As New StreamReader(xmlToFile(xml))
-                Try
-                    mensaje = x.Deserialize(objStreamReader)
-                Catch ex As Exception
-                    MsgBox("Error al DesSerializar: " & ex.ToString)
-                Finally
-                    objStreamReader.Close()
-                End Try
-                Return mensaje
             Catch ex As Exception
                 MsgBox("Error DesSerializar mensaje!" & vbCrLf & ex.Message)
             End Try

@@ -82,7 +82,6 @@
     <Compile Include="Conexion.vb" />
     <Compile Include="Datos.vb" />
     <Compile Include="Funciones.vb" />
-    <Compile Include="Mensaje.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
